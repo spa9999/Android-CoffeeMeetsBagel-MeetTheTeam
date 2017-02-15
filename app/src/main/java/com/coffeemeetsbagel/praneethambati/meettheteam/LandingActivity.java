@@ -1,71 +1,44 @@
 package com.coffeemeetsbagel.praneethambati.meettheteam;
 
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
-import static java.util.Collections.sort;
 
-public class LandingActivity extends AppCompatActivity {
+
+
+public class LandingActivity extends AppCompatActivity{
 
     //Variable Declaration
     List<PersonModel> employeesList;
-    SimpleAdapter employeesAdapter;
     private String[] imageUrls;
-
-
-
 
     //Layout related Variable
     ListView employeeLV;
     private boolean isUserScroll;
     private boolean isDataLoading;
-
+    SearchView search;
+    CustomListAdapter customListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +51,7 @@ public class LandingActivity extends AppCompatActivity {
 
         //Layout related Variables Initialization with findViewById
         employeeLV = (ListView) findViewById(R.id.employeeLV);
+
 
 
         // Reading json file from assets folder
@@ -151,47 +125,12 @@ public class LandingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Setting up ListView to display image, firstName, Title.
-       /* List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
 
-
-        for (int i = 0; i < employeesList.size(); i++) {
-            HashMap<String, String> hm = new HashMap<String, String>();
-            hm.put("listview_title", employeesList.get(i).getFirstName());
-            hm.put("listview_discription", employeesList.get(i).getTitle());
-          //  hm.put("listview_image", employeesList.get(i).getAvatar());
-
-
-            aList.add(hm);
-
-            System.out.println("Alist:" + aList.get(i));
-        }
-
-        System.out.println("Alist:" + aList.size());
-
-        *//*String[] from = {"listview_image", "listview_title", "listview_discription"};
-        int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_short_description};
-*//*
-
-        String[] from = {"listview_title", "listview_discription"};
-        int[] to = {R.id.listview_item_title, R.id.listview_item_short_description};
-
-        employeesAdapter = new SimpleAdapter(getBaseContext(), aList, R.layout.activity_landing_listview_layout, from, to);
-
-        employeeLV.setAdapter(employeesAdapter);*/
-        /*ImageView imageView = (ImageView) findViewById(R.id.listview_image);
-        Context context = imageView.getContext();
-        String url = "http://i.imgur.com/DvpvklR.png";
-        for(int i=0;i<imageUrls.length;i++) {
-            Picasso.with(context)
-                    .load(url)
-                    .resize(50,50)
-                    .into(imageView);
-        }*/
-
+        //Setting up the ListView containing FirstName, Avatar, Title
         ListView empListView = (ListView) findViewById(R.id.employeeLV);
         ArrayList<String> srcList = new ArrayList<String>(Arrays.asList(imageUrls));
-        empListView.setAdapter(new CustomListAdapter(this, employeesList));
+       customListAdapter= new CustomListAdapter(this, employeesList);
+        empListView.setAdapter(customListAdapter);
 
         empListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -218,6 +157,7 @@ public class LandingActivity extends AppCompatActivity {
             }
         });
 
+        //On item click, Collecting information of that particular cell and passing the next Activity
         empListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -231,7 +171,23 @@ public class LandingActivity extends AppCompatActivity {
             }
         });
 
+        search = (SearchView) findViewById(R.id.searchView1);
+        //*** setOnQueryTextListener **
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                customListAdapter.filter(newText);
+                return false;
+            }
+        });
+
     }
+
 
 
 }

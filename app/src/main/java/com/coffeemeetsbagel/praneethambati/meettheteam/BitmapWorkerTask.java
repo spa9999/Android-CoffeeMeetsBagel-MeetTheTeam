@@ -16,10 +16,7 @@ import java.net.URLConnection;
  * Created by Praneeth Ambati on 2/14/2017.
  */
 
-// ----------------------------------------------------
-// Load bitmap in AsyncTask
-// ref:
-// http://developer.android.com/training/displaying-bitmaps/process-bitmap.html
+
 public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
     private final WeakReference<ImageView> imageViewReference;
     private String imageUrl;
@@ -45,7 +42,6 @@ public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
             final ImageView imageView = imageViewReference.get();
             if (imageView != null) {
                 // imageView.setBackground(R.drawable.circle);
-
                 imageView.setImageBitmap(bitmap);
             }
         }

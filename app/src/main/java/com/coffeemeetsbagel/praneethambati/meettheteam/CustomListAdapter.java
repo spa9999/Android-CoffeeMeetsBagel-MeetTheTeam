@@ -8,18 +8,26 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Praneeth Ambati on 2/14/2017.
  */
 public class CustomListAdapter extends BaseAdapter {
+
     private List<PersonModel> listData;
+
+    private ArrayList<PersonModel> arraylist;
     private LayoutInflater layoutInflater;
 
     public CustomListAdapter(Context context, List<PersonModel> listData) {
         this.listData = listData;
         layoutInflater = LayoutInflater.from(context);
+
+        this.arraylist = new ArrayList<PersonModel>();
+        this.arraylist.addAll(listData);
     }
 
     @Override
@@ -57,6 +65,22 @@ public class CustomListAdapter extends BaseAdapter {
             new BitmapWorkerTask(holder.icon).execute(listData.get(position).getAvatar());
         }
         return convertView;
+    }
+    // Filter Class
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        listData.clear();
+        if (charText.length() == 0) {
+            listData.addAll(arraylist);
+        } else {
+            for (PersonModel wp : arraylist) {
+                if (wp.getFirstName().toLowerCase(Locale.getDefault())
+                        .contains(charText) || wp.getTitle().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    listData.add(wp);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     class ViewHolder {
